@@ -63,6 +63,25 @@ gf.to_parquet('burst_map_IW_000001_375887_brotli.parquet', compression='brotli',
 -rw-r--r--  1 scott  staff    74M Jun 29 16:05 burst_map_IW_000001_375887_brotli.parquet
 ```
 
-TODO: figure out how to map efficiently...
-https://observablehq.com/@kylebarron/geoparquet-on-the-web
+### Update 1/25/2024
+
+Used OGR CLI (3.8.3) to create SOZIP gpkg:
+```
+time ogr2ogr burst_map_IW_000001_375887.gpkg burst_map_IW_000001_375887.sqlite3
+# 7.09s user 0.99s system 100% cpu 8.004 total
+time sozip burst_map_IW_000001_375887.gpkg.zip burst_map_IW_000001_375887.gpkg
+# 11.32s user 0.60s system 851% cpu 1.400 total
+```
+
+```
+# Best performance if you're able to hone in on a subregion first
+gf = gpd.read_file('burst_map_IW_000001_375887.gpkg.zip', bbox=[80.0, 26.3, 88.2, 30.5])
+gf
+
+     burst_id subswath_name  relative_orbit_number  time_from_anx_sec  orbit_pass                                           geometry
+0      180577           IW2                     85         417.029296   ASCENDING  MULTIPOLYGON Z (((85.37449 25.98202 0.00000, 8...
+1      180578           IW2                     85         419.787569   ASCENDING  MULTIPOLYGON Z (((85.33970 26.14839 0.00000, 8...
+2      180579           IW2                     85         422.545842   ASCENDING  MULTIPOLYGON Z (((85.30489 26.31477 0.00000, 8...
+```
+
 
